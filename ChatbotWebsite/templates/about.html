@@ -1,0 +1,65 @@
+{%extends 'layout.html'%}{%block content%}
+<style>
+  /* 设置背景图并应用模糊效果 */
+  body {
+    position: relative; /* 使背景图的伪元素能够覆盖在页面上 */
+    overflow: hidden; /* 防止页面溢出 */
+  }
+
+  /* 使用伪元素来显示背景图 */
+  body::before {
+    content: ''; /* 必须定义内容 */
+    position: absolute; /* 绝对定位 */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('{{ url_for("static", filename="images/picture5.jpg") }}');
+    background-size: cover; /* 背景图像覆盖整个页面 */
+    background-position: center; /* 背景居中显示 */
+    background-attachment: fixed; /* 背景固定不随页面滚动 */
+    filter: blur(3px); /* 设置模糊度为 3px */
+    z-index: -1; /* 确保背景图位于内容之后 */
+  }
+</style>
+
+
+<div class="container text-center">
+  <div class="row justify-content-center">
+    <div class="col-12">
+      <img
+        src="{{url_for('static', filename='images/picture4.jpg')}}"
+        alt="Mental Health Chatbot Picture"
+        class="rounded-circle border border-secondary mx-auto mb-3 d-block shadow"
+        style="width: 18.75rem; height: 18.75rem"
+      />
+    </div>
+    <div class="col-12">
+      <h1 id="about-us-title" class="mx-auto mt-3 mb-5 fw-bold font-monospace">
+        About Us
+      </h1>
+    </div>
+  </div>
+</div>
+
+
+  <div class="container text-center">
+    <div class="row justify-content-center">
+      <div class="col-12 col-md-8">
+        <h2>Our Mission</h2>
+        <p>
+          Combining chatbot technology with sentiment analysis can create intelligent counseling tools that can provide psychological support online 24/7. The psychological counseling chatbot can deeply understand and analyze the user's emotional state, providing personalized and immediate psychological intervention and support. Additionally, it can also serve as an auxiliary tool for psychiatrists, improving the efficiency and quality of diagnosis and treatment, and widely improving the public's mental health level.
+        </p>
+
+        <h2>Our Team</h2>
+        <p>
+          Jiesen LONG (2230026109), Zhiyue CHOU (2230026028), Jiaying SHAN (2230026230), <br>
+          Yizhen XIN (2230026179), Ruoyi WANG (2230026155), Shuxuan DING (2230026232)
+        </p>
+      </div>
+    </div>
+  </div>
+  
+  
+  {%endblock content%}
+</div>

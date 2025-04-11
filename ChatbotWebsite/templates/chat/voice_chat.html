@@ -1,0 +1,258 @@
+{% extends 'layout.html'%} <!-- 继承自 layout.html 模板 -->
+
+{%block style%}
+<!-- 在此块中引入自定义样式 -->
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='styles/chat.css') }}"
+/>
+{%endblock style%}
+
+{% block content%}
+<style>
+  .chat-area {
+    background-image: url('{{ url_for("static", filename="images/picture3.jpg") }}');
+    background-size: cover; /* 让背景图片填充整个聊天框 */
+    background-position: center; /* 图片居中显示 */
+    background-repeat: no-repeat; /* 防止图片重复 */
+    background-size: 70%; /* 将背景图片缩小到 50% */
+    width: 100%; /* 确保宽度填满 */
+    height: 100%; /* 确保高度填满 */
+  }
+  
+</style>
+
+<!-- 聊天页面的主体内容块 -->
+<div id="chatbot" class="chatbot">
+  <div id="chatbot-profile" class="chatbot-profile">
+    <!-- 聊天机器人头像和信息区域 -->
+    <img
+      src="{{url_for('static',filename='images/picture2.jpg')}}"
+      id="chatbot-image"
+      class="rounded-circle border border-secondary my-4 mx-auto d-block"
+      style="width: 15.625rem; height: 15.625rem"
+    />
+    <!-- 显示机器人头像 -->
+    <div class="container d-grid gap-3 px-5">
+      <!-- 按钮和开发者信息 -->
+      <a
+        class="btn btn-outline-info btn-lg"
+        href="{{url_for('main.about')}}"
+      >
+        About us🤖
+      </a>
+      <!-- 关于按钮，跳转到关于页面 -->
+      <button type="button" class="btn btn-lg btn-info" data-bs-toggle="popover" data-bs-title="Help" data-bs-placement="top" data-bs-content="Start the conversation by typing a greeting or ask a question (E.g. What is Mental Health, What is the cause of depression). You can also select a specific topic, test or exercise through the tab above the text input box. Having trouble with the chatting? Avoid typo as this chatbot has built-in autocorrector, thank you!">Need Help?</button>
+      <!-- "Need Help?" 按钮，显示帮助信息 -->
+      <button type="button" class="btn btn-lg btn-info" data-bs-toggle="popover" data-bs-title="Subject List" data-bs-placement="bottom" data-bs-content="Topics I discuss include mental health, addiction, anxiety, depression, psychological disorders, mood management, loneliness, substance abuse, meditation, mindfulness, personal growth, phobias, self-care, sleep quality, stress coping, suicide prevention, and trauma treatment.">Subject</button>
+      <!-- "Subject" 按钮，显示话题列表 -->
+    
+      <!-- 显示开发者信息 -->
+    </div>
+  </div>
+  
+  <div class="chat-area">
+    <main id="main-chat" class="main-chat">
+      <!-- 聊天区域 -->
+      {% if current_user.is_authenticated and messages %}
+        <!-- 如果用户已登录并且有消息 -->
+        {%for message in messages%}
+          {%if message.sender == 'user'%}
+            <!-- 如果消息是用户发送的 -->
+            <div class="chat right-msg">
+              <img src="{{url_for('static',filename='profile_images/default.jpg')}}" class="chat-image"/>
+              <div class="chat-bubble">
+                <div class="chat-info">
+                  <div class="chat-info-name">You</div>
+                  <!-- 显示用户名字 -->
+                  <div class="chat-info-time">{{message.timestamp.strftime('%d/%m/%Y, %H:%M')}}</div>
+                  <!-- 显示消息时间 -->
+                </div>
+                <div class="chat-text">
+                  {{message.message}}
+                  <!-- 显示用户发送的消息 -->
+                </div>
+              </div>
+            </div>
+          {%else%}
+            <!-- 如果消息是聊天机器人发送的 -->
+            <div class="chat left-msg">
+              <img src="{{url_for('static',filename='images/picture2.jpg')}}" class="chat-image"/>
+              <div class="chat-bubble">
+                <div class="chat-info">
+                  <div class="chat-info-name">MoodMate</div>
+                  <!-- 显示聊天机器人名字 -->
+                  <div class="chat-info-time">{{message.timestamp.strftime('%d/%m/%Y, %H:%M')}}</div>
+                  <!-- 显示消息时间 -->
+                </div>
+                <div class="chat-text">
+                  {{message.message}}
+                  <!-- 显示聊天机器人发送的消息 -->
+                </div>
+              </div>
+            </div>
+          {%endif%}
+        {%endfor%}
+        <hr>
+      {%endif%}
+      <!-- 如果用户已登录并且有消息，循环显示所有消息 -->
+      <p class="text-muted text-center mb-2">Today</p>
+      <!-- 显示今天的日期标签 -->
+      
+      <div class="chat left-msg">
+        <img src="{{url_for('static',filename='images/picture2.jpg')}}" class="chat-image"/>
+        <div class="chat-bubble">
+          <div class="chat-info">
+            <div class="chat-info-name">MoodMate</div>
+            <div class="chat-info-time">**:**</div>
+            <!-- 默认时间格式 -->
+          </div>
+          {%if current_user.is_authenticated%}
+            <!-- 如果用户已登录，显示个性化的欢迎消息 -->
+            <div class="chat-text">
+              Please do understand that this is a chatbot and not a real person, please don't substitute this for real help.
+              <br><br>
+              Always best to seek professional help if you are in need of it.
+              <br><br>
+              With that said,
+              <br>
+              Hi {{current_user.username}}, welcome back to MoodMate! Go ahead and send me a message. 😄 
+            </div>
+          {%else%}
+            <!-- 如果用户未登录，显示通用欢迎消息 -->
+            <div class="chat-text">
+              Hello, welcome to MoodMate! Go ahead and send me a message. 😄
+              <br><br>
+              Please do understand that this is a chatbot and not a real person, please don't substitute this for real help.
+              <br><br>
+              Always best to seek professional help if you are in need of it.
+            </div>
+          {%endif%}
+        </div>
+      </div>
+    </main>
+    
+    <script>
+      let element = document.getElementById("main-chat");
+      setTimeout(() => {
+        element.scrollTop = element.scrollHeight;
+      }, 100); 
+      <!-- 自动滚动到聊天区域的底部 -->
+    </script>
+
+    <div>
+      <!-- 工具区 -->
+      <div class="tools border-top border-info gap-3">
+        <!-- 语言选择下拉菜单 -->
+        <div class="btn-group dropup">
+          <label for="languageSelect">Select Language 🌍:</label>
+            <select id="languageSelect" class="form-select" style="display: inline-block; width: auto; margin-left: 10px;">
+              <option value="en-US">English</option>
+              <option value="zh-CN">中文</option>
+            </select>
+        </div>
+
+      </div>
+      
+      
+      <form id="message-form" class="chat-inputarea">
+        <!-- 消息输入表单 -->
+        <input type="hidden" name="source" value="voice_chat" />
+        <input
+          type="text"
+          class="chat-input"
+          id="textInput"
+          name="msg"
+          autocomplete="off"
+          placeholder="Enter your message..."
+          style="display:none"
+        /><!-- 发送按钮 -->
+        <button type="submit" class="btn btn-outline-info" style="display:none">Send</button>
+
+        <!-- 语音输入按钮 -->
+        <button type="button" id="voiceInputBtn" class="btn btn-outline-info">
+          🎤 Start Speaking
+        </button>
+        
+      </form>
+      
+    </div>
+  </div>
+
+<script>
+  //语音转文本
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const recognition = SpeechRecognition ? new SpeechRecognition() : null;
+  if (SpeechRecognition) {
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false; // 设置为 true 会识别连续的语音输入
+    recognition.interimResults = true; // 显示部分结果
+
+    const voiceInputBtn = document.getElementById('voiceInputBtn');
+    const messageForm = document.getElementById("message-form");
+    const textInput = document.getElementById('textInput');
+    const languageSelect = document.getElementById('languageSelect');
+
+    // 启动语音识别
+    voiceInputBtn.addEventListener('click', () => {
+      if (!recognition) {
+        alert("Your browser doesn't support Speech Recognition. Please use Chrome or Edge.");
+        return;
+      }
+
+      // 设置识别语言为选择框的当前值
+      recognition.lang = languageSelect.value;
+
+      recognition.start();
+      voiceInputBtn.innerHTML = '🎙️ Listening...'; // 改变按钮图标为录音中
+      voiceInputBtn.setAttribute('disabled', true); // 禁用按钮防止重复点击
+    });
+
+    // 当识别到语音时
+    recognition.onresult = function(event) {
+      const transcript = event.results[0][0].transcript; // 获取识别到的文本
+      textInput.value = transcript; // 填入文本框
+    };
+
+    // 语音识别结束后恢复按钮状态
+    recognition.onend = function() {
+      voiceInputBtn.innerHTML = '🎤 Start Speaking'; // 恢复按钮图标
+      voiceInputBtn.removeAttribute('disabled'); // 恢复按钮可点击
+
+      messageForm.requestSubmit();
+    };
+
+    // 错误处理
+    recognition.onerror = function(event) {
+      console.error("Speech recognition error: " + event.error);
+      voiceInputBtn.innerHTML = '🎤'; // 如果有错误，恢复按钮状态
+      voiceInputBtn.removeAttribute('disabled');
+    };
+
+  } else {
+    console.log("Your browser does not support SpeechRecognition.");
+    // 如果浏览器不支持语音识别，可以在此处提供一个替代方案或提示
+  }
+
+  // 表单提交逻辑
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const userMessage = textInput.value;
+
+    const response = await fetch("/voice_chat_messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ msg: userMessage }),
+    });
+
+    const data = await response.json();
+    // 显示响应（可以更新 DOM）
+    console.log(data.msg);
+  });
+</script>
+ 
+
+  {%include "chat/send_function.html"%}
+  <!-- 包含发送消息的功能 -->
+
+{%endblock content%}

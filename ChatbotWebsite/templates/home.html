@@ -1,0 +1,209 @@
+{%extends 'layout.html'%} {%block navigation%}{%endblock navigation%} {%block content%}
+<!-- <link rel="stylesheet" href="{{ url_for('static', filename='style/chat.css') }}"> -->
+<style>
+  /* 仅在home页中应用背景图片 */
+  #home-container {
+    position: relative; /* 确保伪元素可以定位 */
+    height: 100vh; /* 高度占满视口 */
+    overflow: hidden; /* 避免内容溢出 */
+  }
+
+  /* 添加伪元素作为背景 */
+  #home-container::before {
+    content: ''; /* 必须定义内容 */
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('{{ url_for("static", filename="images/picture1.webp") }}');
+    background-size: cover; /* 背景图像覆盖整个区域 */
+    background-position: center; /* 背景居中显示 */
+    background-attachment: fixed; /* 背景固定不随页面滚动 */
+    filter: blur(10px); /* 设置模糊度 */
+    z-index: -1; /* 使伪元素位于内容后面 */
+  }
+
+  #chatbot-name {
+    font-size: 5rem; /* 调整字体大小 */
+    font-weight: bold;   /* 设置字体为加粗*/
+    color: transparent; /* 字体透明，显示背景 */
+    background-image: linear-gradient(to bottom, white, #00ffff); /* 白色到青色的渐变 */
+    background-clip: text; /* 背景裁剪到文字 */
+    -webkit-background-clip: text; /* Safari 支持 */
+    text-align: center; /* 居中对齐 */
+  }
+</style>
+
+<div id="home-container" class="container-fluid d-grid gap-3">
+  <img
+    src="{{url_for('static',filename='images/picture2.jpg')}}"
+    alt="Mental Health Chatbot Picture"
+    class="rounded-circle border border-secondary mt-3 mx-auto d-block shadow"
+    style="width: 21.875rem; height: 21.875rem"
+  />
+  <h1
+    id="chatbot-name"
+    class="mx-auto my-2 fw-bold font-monospace"
+  >
+    Welcome to MoodMate!
+  </h1>
+
+
+
+        {% if current_user.is_authenticated %}
+        <a
+          id="chat-now-link"
+          class="btn btn-info mx-auto d-block"
+          style="
+            --bs-btn-padding-y: 1.25rem;
+            --bs-btn-padding-x: 5.5rem;
+            --bs-btn-font-size: 2rem;
+            --bs-btn-font-weight: 700;
+          "
+          href="{{url_for('chatbot.chat')}}"
+        >
+          CHAT NOW
+        </a>
+        {% else %}
+        <!-- LOGIN 和 REGISTER 按钮在同一行 -->
+<div class="d-flex justify-content-center gap-3">
+  <!-- LOGIN Button -->
+  <button
+    id="login-link"
+    class="btn"
+    style="
+      --bs-btn-padding-y: 0.75rem;
+      --bs-btn-padding-x: 3.5rem;
+      --bs-btn-font-size: 1.5rem;
+      --bs-btn-font-weight: 700;
+      background-color: #00b7cc; /* 青蓝色背景 */
+      color: white; /* 白色字体 */
+      border: none; /* 去掉边框 */
+    "
+    data-bs-toggle="modal"
+    data-bs-target="#loginModal"  
+  >
+    LOGIN
+  </button>
+
+  <!-- REGISTER Button -->
+  <button
+    id="register-link"
+    class="btn"
+    style="
+      --bs-btn-padding-y: 0.75rem;
+      --bs-btn-padding-x: 3.5rem;
+      --bs-btn-font-size: 1.5rem;
+      --bs-btn-font-weight: 700;
+      background-color: #00b7cc; /* 青蓝色背景 */
+      color: white; /* 白色字体 */
+      border: none; /* 去掉边框 */
+    "
+    data-bs-toggle="modal"
+    data-bs-target="#registerModal"  
+  >
+    REGISTER
+  </button>
+</div>
+
+<!-- CONTINUE Button 单独一行，样式与LOGIN和REGISTER一致 -->
+<button
+  id="continue-link"
+  class="btn mx-auto d-block mt-3"
+  style="
+    --bs-btn-padding-y: 0.75rem;
+    --bs-btn-padding-x: 3.5rem;
+    --bs-btn-font-size: 1.5rem;
+    --bs-btn-font-weight: 700;
+    background-color: #00b7cc; /* 青蓝色背景 */
+    color: white; /* 白色字体 */
+    border: none; /* 去掉边框 */
+  "
+  data-bs-toggle="modal"
+  data-bs-target="#continueModal" 
+>
+  CONTINUE
+</button>
+
+<!-- LOGIN Modal -->
+<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold font-monospace" id="loginModalLabel">Login</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Please log in to your account.</p>
+        <a class="btn btn-outline-info btn-lg" href="{{url_for('users.login')}}">Go to Login</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- REGISTER Modal -->
+<div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold font-monospace" id="registerModalLabel">Register</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>If you don't have an account, please register now.</p>
+        <a class="btn btn-outline-info btn-lg" href="{{url_for('users.register')}}">Go to Register</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTINUE Modal (Guest Mode) -->
+<div class="modal fade" id="continueModal" tabindex="-1" aria-labelledby="continueModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold font-monospace" id="continueModalLabel">Continue as Guest</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>You can continue without logging in. Are you sure you want to proceed as a guest?</p>
+        <a class="btn btn-outline-info btn-lg" href="{{url_for('chatbot.chat')}}">Continue as Guest</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+        {%endif%}
+      
+
+    <a
+      href="{{url_for('main.about')}}"
+      id="about-me-link"
+      class="btn btn-outline-info mx-auto d-block"
+      style="
+        --bs-btn-padding-y: 1.25rem;
+        --bs-btn-padding-x: 5.5rem;
+        --bs-btn-font-size: 2rem;
+        --bs-btn-border-width: 0;
+      "
+    >
+      About Us
+    </a>
+    {%if current_user.is_authenticated %}
+        <a
+          href="{{url_for('users.logout')}}"
+          id="about-me-link"
+          class="btn btn-outline-secondary mx-auto d-block"
+          style="
+            --bs-btn-padding-x: 3.5rem;
+            --bs-btn-font-size: 1rem;
+          "
+        >
+          Logout
+        </a>
+      {%endif%}
+  </div>
+  
+  {%endblock content%}
+</div>

@@ -1,0 +1,297 @@
+{% extends 'layout.html'%} <!-- 继承自 layout.html 模板 -->
+
+{%block style%}
+<!-- 在此块中引入自定义样式 -->
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='styles/chat.css') }}"
+/>
+{%endblock style%}
+
+{% block content%}
+<style>
+  .chat-area {
+    background-image: url('{{ url_for("static", filename="images/picture3.jpg") }}');
+    background-size: cover; /* 让背景图片填充整个聊天框 */
+    background-position: center; /* 图片居中显示 */
+    background-repeat: no-repeat; /* 防止图片重复 */
+    background-size: 70%; /* 将背景图片缩小到 50% */
+    width: 100%; /* 确保宽度填满 */
+    height: 100%; /* 确保高度填满 */
+  }
+
+  .chatbot {
+    background-image: url('{{ url_for("static", filename="images/picture6.jpg") }}');
+    background-size: 20% 100%; /* 将图片拉伸以完全填充背景 */
+    background-position: left;
+    background-repeat: no-repeat;
+    width: 100%;
+    height: 100%;
+  }
+  
+</style>
+
+<!-- 聊天页面的主体内容块 -->
+<div id="chatbot" class="chatbot">
+  <div id="chatbot-profile" class="chatbot-profile">
+    <!-- 聊天机器人头像和信息区域 -->
+    <img
+      src="{{url_for('static',filename='images/picture2.jpg')}}"
+      id="chatbot-image"
+      class="rounded-circle border border-secondary my-4 mx-auto d-block"
+      style="width: 15.625rem; height: 15.625rem"
+    />
+    <!-- 显示机器人头像 -->
+    <div class="container d-grid gap-3 px-5">
+      <!-- 按钮和开发者信息 -->
+      <a
+        class="btn btn-outline-info btn-lg"
+        href="{{url_for('main.about')}}"
+      >
+        About us🤖
+      </a>
+      <!-- 关于按钮，跳转到关于页面 -->
+      <button type="button" class="btn btn-lg btn-info" data-bs-toggle="popover" data-bs-title="Help" data-bs-placement="top" data-bs-content="Start the conversation by typing a greeting or ask a question (E.g. What is Mental Health, What is the cause of depression). You can also select a specific topic, test or exercise through the tab above the text input box. Having trouble with the chatting? Avoid typo as this chatbot has built-in autocorrector, thank you!">Need Help?</button>
+      <!-- "Need Help?" 按钮，显示帮助信息 -->
+      <button type="button" class="btn btn-lg btn-info" data-bs-toggle="popover" data-bs-title="Subject List" data-bs-placement="bottom" data-bs-content="Topics I discuss include mental health, addiction, anxiety, depression, psychological disorders, mood management, loneliness, substance abuse, meditation, mindfulness, personal growth, phobias, self-care, sleep quality, stress coping, suicide prevention, and trauma treatment.">Subject</button>
+      <!-- "Subject" 按钮，显示话题列表 -->
+    
+      <!-- 显示开发者信息 -->
+    </div>
+  </div>
+  
+  <div class="chat-area">
+    <main id="main-chat" class="main-chat">
+      <!-- 聊天区域 -->
+      {% if current_user.is_authenticated and messages %}
+        <!-- 如果用户已登录并且有消息 -->
+        {%for message in messages%}
+          {%if message.sender == 'user'%}
+            <!-- 如果消息是用户发送的 -->
+            <div class="chat right-msg">
+              <img src="{{url_for('static',filename='profile_images/default.jpg')}}" class="chat-image"/>
+              <div class="chat-bubble">
+                <div class="chat-info">
+                  <div class="chat-info-name">You</div>
+                  <!-- 显示用户名字 -->
+                  <div class="chat-info-time">{{message.timestamp.strftime('%d/%m/%Y, %H:%M')}}</div>
+                  <!-- 显示消息时间 -->
+                </div>
+                <div class="chat-text">
+                  {{message.message}}
+                  <!-- 显示用户发送的消息 -->
+                </div>
+              </div>
+            </div>
+          {%else%}
+            <!-- 如果消息是聊天机器人发送的 -->
+            <div class="chat left-msg">
+              <img src="{{url_for('static',filename='images/picture2.jpg')}}" class="chat-image"/>
+              <div class="chat-bubble">
+                <div class="chat-info">
+                  <div class="chat-info-name">MoodMate</div>
+                  <!-- 显示聊天机器人名字 -->
+                  <div class="chat-info-time">{{message.timestamp.strftime('%d/%m/%Y, %H:%M')}}</div>
+                  <!-- 显示消息时间 -->
+                </div>
+                <div class="chat-text">
+                  {{message.message}}
+                  <!-- 显示聊天机器人发送的消息 -->
+                </div>
+              </div>
+            </div>
+          {%endif%}
+        {%endfor%}
+        <hr>
+      {%endif%}
+      <!-- 如果用户已登录并且有消息，循环显示所有消息 -->
+      <p class="text-muted text-center mb-2">Today</p>
+      <!-- 显示今天的日期标签 -->
+      
+      <div class="chat left-msg">
+        <img src="{{url_for('static',filename='images/picture2.jpg')}}" class="chat-image"/>
+        <div class="chat-bubble">
+          <div class="chat-info">
+            <div class="chat-info-name">MoodMate</div>
+            <div class="chat-info-time">**:**</div>
+            <!-- 默认时间格式 -->
+          </div>
+          {%if current_user.is_authenticated%}
+            <!-- 如果用户已登录，显示个性化的欢迎消息 -->
+            <div class="chat-text">
+              Please do understand that this is a chatbot and not a real person, please don't substitute this for real help.
+              <br><br>
+              Always best to seek professional help if you are in need of it.
+              <br><br>
+              With that said,
+              <br>
+              Hi {{current_user.username}}, welcome back to MoodMate! Go ahead and send me a message. 😄 
+            </div>
+          {%else%}
+            <!-- 如果用户未登录，显示通用欢迎消息 -->
+            <div class="chat-text">
+              Hello, welcome to MoodMate! Go ahead and send me a message. 😄
+              <br><br>
+              Please do understand that this is a chatbot and not a real person, please don't substitute this for real help.
+              <br><br>
+              Always best to seek professional help if you are in need of it.
+            </div>
+          {%endif%}
+        </div>
+      </div>
+    </main>
+    
+    <script>
+      let element = document.getElementById("main-chat");
+      setTimeout(() => {
+        element.scrollTop = element.scrollHeight;
+      }, 100); 
+      <!-- 自动滚动到聊天区域的底部 -->
+    </script>
+
+    <div>
+      <!-- 工具区 -->
+      <div class="tools border-top border-info gap-3">
+        <div class="btn-group dropup">
+          <button type="button" class="btn btn-outline-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            Topics📜
+          </button>
+          <ul class="dropdown-menu">
+            {% for topic in (topics.topics)%}
+              <li>
+                <button class="dropdown-item" onclick="responseTopic('{{topic.title}}')">
+                  {{topic.title}}
+                </button>
+              </li>
+            {% endfor%} 
+          </ul>
+        </div>
+        <!-- 显示话题列表的下拉菜单 -->
+        
+        <div class="btn-group dropup">
+          <button type="button" class="btn btn-outline-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            Tests📝
+          </button>
+          <ul class="dropdown-menu">
+            {% for test in (tests.tests)%}
+              <li>
+                <button class="dropdown-item" id="test-button-{{test.title}}" onclick="responseTest('{{test.title}}')">
+                  {{test.title}}
+                </button>
+              </li>
+            {% endfor%} 
+          </ul>
+        </div>
+        <!-- 显示测试列表的下拉菜单 -->
+
+        <!-- 语言选择下拉菜单 -->
+        <div class="btn-group dropup">
+          <button type="button" class="btn btn-outline-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            Select Language 🌍
+          </button>
+          <ul class="dropdown-menu">
+            <li><button class="dropdown-item" id="lang-en" onclick="setLanguage('en-US')">English</button></li>
+            <li><button class="dropdown-item" id="lang-zh" onclick="setLanguage('zh-CN')">中文</button></li>
+          </ul>
+        </div>
+
+      </div>
+
+      
+      
+      <form id="message-form" class="chat-inputarea" image_file={{ current_user.profile_image if current_user.is_authenticated else "default.jpg" }}>
+        <!-- 消息输入表单 -->
+        <input type="hidden" name="source" value="chat" />
+        <input
+          type="text"
+          class="chat-input"
+          id="textInput"
+          name="msg"
+          autocomplete="off"
+          placeholder="Enter your message..."
+        /><!-- 发送按钮 -->
+        <button type="submit" class="btn btn-outline-info">Send</button>
+        
+        <!-- 实时语音输入按钮 -->
+        <a
+          href="{{url_for('chatbot.voice_chat')}}"
+        ><button type="button" id="voice" class="btn btn-outline-info">
+          Voice Chat
+        </button>
+        </a>
+
+        <!-- 语音输入按钮 -->
+        <button type="button" id="voiceInputBtn" class="btn btn-outline-info">
+          🎤
+        </button>
+      </form>
+      
+    </div>
+  </div>
+
+<script>
+  //语音转文本
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const recognition = SpeechRecognition ? new SpeechRecognition() : null;
+  if (SpeechRecognition) {
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false; // 设置为 true 会识别连续的语音输入
+    recognition.interimResults = true; // 显示部分结果
+
+    const voiceInputBtn = document.getElementById('voiceInputBtn');
+    const textInput = document.getElementById('textInput');
+    let selectedLanguage = 'en-US'; // 默认语言为英文
+
+    // 设置语言
+    function setLanguage(language) {
+      selectedLanguage = language;
+      recognition.lang = selectedLanguage; // 更新语言
+    }
+
+    // 启动语音识别
+    voiceInputBtn.addEventListener('click', () => {
+      recognition.lang = selectedLanguage; // 在点击按钮时，根据选定的语言进行识别
+      recognition.start();
+      voiceInputBtn.innerHTML = '🎙️'; // 改变按钮图标为录音中
+      voiceInputBtn.setAttribute('disabled', true); // 禁用按钮防止重复点击
+    });
+
+    // 当识别到语音时
+    recognition.onresult = function(event) {
+      const transcript = event.results[0][0].transcript; // 获取识别到的文本
+      textInput.value = transcript; // 填入文本框
+    };
+
+    // 语音识别结束后恢复按钮状态
+    recognition.onend = function() {
+      voiceInputBtn.innerHTML = '🎤'; // 恢复按钮图标
+      voiceInputBtn.removeAttribute('disabled'); // 恢复按钮可点击
+    };
+
+    // 错误处理
+    recognition.onerror = function(event) {
+      console.error("Speech recognition error: " + event.error);
+      voiceInputBtn.innerHTML = '🎤'; // 如果有错误，恢复按钮状态
+      voiceInputBtn.removeAttribute('disabled');
+    };
+
+    // 监听切换语言按钮
+    document.getElementById('lang-en').addEventListener('click', () => {
+      setLanguage('en-US');
+    });
+
+    document.getElementById('lang-zh').addEventListener('click', () => {
+      setLanguage('zh-CN');
+    });
+
+  } else {
+    console.log("Your browser does not support SpeechRecognition.");
+    // 如果浏览器不支持语音识别，可以在此处提供一个替代方案或提示
+  }
+</script>
+  
+
+  {%include "chat/send_function.html"%}
+  <!-- 包含发送消息的功能 -->
+
+{%endblock content%}
